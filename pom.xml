@@ -15,6 +15,7 @@
         <quarkus.platform.version>3.2.12.Final</quarkus.platform.version>
         <skipITs>true</skipITs>
         <surefire-plugin.version>3.0.0</surefire-plugin.version>
+        <maven.home>${env.MAVEN_HOME}</maven.home>
     </properties>
 
     <dependencyManagement>
