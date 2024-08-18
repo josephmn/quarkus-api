@@ -1,38 +1,39 @@
 package quarkus;
 
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
+
+import java.util.Optional;
 
 @Path(value = "/saludar")
 public class EcoResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public String saludar() {
-        return "Hola";
+    public String saludar(@QueryParam("mensaje") String mensaje) {
+        // using traditional if - else
+        /*if (mensaje == null) {
+            return "No sé muy bien que decir";
+        } else {
+            return "> " + mensaje;
+        }*/
+
+        // using Optional
+        return Optional.ofNullable(mensaje)
+                .map(n -> "> " + n)
+                .orElse("No sé muy bien que decir");
     }
 
     @GET
-    @Path("/dias")
-    @Produces(MediaType.APPLICATION_JSON)
-    public String dias() {
-        return "Hola, buenos días";
+    @Path("/{nombre}")
+    public String saludo(@PathParam("nombre") String nombre) {
+        return "Hola, " + nombre;
     }
 
     @GET
-    @Path("/tardes")
-    @Produces(MediaType.APPLICATION_JSON)
-    public String tardes() {
-        return "Hola, buenas tardes";
-    }
-
-    @GET
-    @Path("/noches")
-    @Produces(MediaType.APPLICATION_JSON)
-    public String noches() {
-        return "Hola, buenas noches";
+    @Path("/{nombre}/mayusculas")
+    public String gritar(@PathParam("nombre") String nombre) {
+        return "HOLA, " + nombre.toUpperCase();
     }
 
 }
