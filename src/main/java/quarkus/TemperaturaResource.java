@@ -6,6 +6,7 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,8 +53,21 @@ public class TemperaturaResource {
     @GET
     @Path("/maxima")
     @Produces(MediaType.APPLICATION_JSON)
-    public String maxima() {
-        return Integer.toString(temperaturas.maxima());
+    public Response maxima() {
+        if (temperaturas.isEmpty()) {
+            return Response.status(404).entity("No hay temperaturas").build();
+        } else {
+            int temperaturaMaxima = temperaturas.maxima();
+            return Response.ok(Integer.toString(temperaturaMaxima))
+                    .header("X-Hola", "Buenos días")
+                    .build();
+        }
+        /*return Response.status(404)
+                .language("es-ES")
+                .header("X-Response", "Hola")
+                .entity(null)
+                .build();
+        */
     }
 
 }
