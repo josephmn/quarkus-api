@@ -1,6 +1,7 @@
 package quarkus.model;
 
 
+import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -9,17 +10,9 @@ import lombok.*;
 import java.time.LocalDate;
 
 @Entity
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
-@ToString
-@EqualsAndHashCode
-public class Book {
-
-    @Id
-    @GeneratedValue
-    private Long id;
+public class Book extends PanacheEntity {
     private String title;
     private int numPages;
     private LocalDate pubDate;
