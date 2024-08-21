@@ -1,5 +1,6 @@
 package quarkus.web;
 
+import io.quarkus.panache.common.Sort;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
@@ -19,6 +20,41 @@ public class BookResource {
     @GET
     public List<Book> index() {
         return bookRepository.listAll();
+    }
+
+    @GET
+    @Path("/filter")
+    public List<Book> filter() {
+        return bookRepository.list("genre", "Tragicomedia");
+    }
+
+    @GET
+    @Path("/page")
+    public List<Book> filterPage() {
+        return bookRepository.list("numPages >= 400");
+    }
+
+    @GET
+    @Path("/pageparam")
+    public List<Book> filterPageParam(@QueryParam("numPages") Integer numPages) {
+        if (numPages == null) {
+            return bookRepository.listAll();
+        } else {
+            return bookRepository.list("numPages >= ?1", numPages);
+        }
+        //return bookRepository.list("numPages >= 400");
+    }
+
+    @GET
+    @Path("/title")
+    public List<Book> filterTitle(@QueryParam("q") String query) {
+        if (query == null) {
+            return bookRepository.listAll(Sort.by("pubDate", Sort.Direction.Descending));
+        } else {
+            String filter = "%" + query + "%";
+            Sort crit = Sort.by("pubDate", Sort.Direction.Ascending);
+            return bookRepository.list("title ILIKE ?1 OR description ILIKE ?2", crit, filter, filter);
+        }
     }
 
     @POST
