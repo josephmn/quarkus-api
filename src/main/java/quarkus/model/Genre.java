@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
         name = "name.like",
         parameters = @ParamDef(name = "name", type = String.class)
 )
-@Filter(name = "name.like", condition = "name = :name")
+@Filter(name = "name.like", condition = "LOWER(name) LIKE LOWER(:name)")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

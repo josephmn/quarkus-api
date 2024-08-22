@@ -47,7 +47,8 @@ public class GenreResource {
         var query = genreRepository.findAll(Sort.descending("createAt"));
 
         if (q != null) {
-            query.filter("name.like", Parameters.with("name", q));
+            var nameLike = "%" + q + "%";
+            query.filter("name.like", Parameters.with("name", nameLike));
         }
         query.page(p);
         return new PaginatedResponse<>(query);
