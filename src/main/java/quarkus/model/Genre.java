@@ -1,5 +1,8 @@
 package quarkus.model;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -26,10 +29,17 @@ public class Genre {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+    @JsonProperty("genreName")
+    @JsonAlias({"genreName", "name"})
     private String name;
     @CreationTimestamp
+    @JsonIgnore
     private LocalDateTime createAt;
     @UpdateTimestamp
+    @JsonIgnore
     private LocalDateTime updateAt;
 
+    public int getClassification() {
+        return name.length();
+    }
 }
