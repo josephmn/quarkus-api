@@ -1,11 +1,14 @@
 package quarkus.web;
 
+import io.quarkus.panache.common.Page;
+import io.quarkus.panache.common.Sort;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
 import quarkus.model.Genre;
 import quarkus.repository.GenreRepository;
+import quarkus.util.PaginatedResponse;
 
 import java.net.URI;
 import java.util.List;
@@ -20,6 +23,27 @@ public class GenreResource {
     @GET
     public List<Genre> list() {
         return genreRepository.listAll();
+    }
+
+    @GET
+    @Path("/page")
+    public List<Genre> listPage(
+            @QueryParam("p") @DefaultValue("1") int page
+    ) {
+        Page p = new Page(page - 1,5);
+        return genreRepository.findAll(Sort.descending("createAt"))
+                .page(p)
+                .list();
+    }
+
+    @GET
+    @Path("/pageResponse")
+    public PaginatedResponse<Genre> listPageResponse(
+            @QueryParam("p") @DefaultValue("1") int page
+    ) {
+        Page p = new Page(page - 1,5);
+        var query = genreRepository.findAll(Sort.descending("createAt")).page(p);
+        return new PaginatedResponse<>(query);
     }
 
     @POST
