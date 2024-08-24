@@ -29,14 +29,14 @@ public class Genre {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @JsonProperty("genreName")
-    @JsonAlias({"genreName", "name"})
+//    @JsonProperty("genreName")
+//    @JsonAlias({"genreName", "name"})
     private String name;
     @CreationTimestamp
-    @JsonIgnore
+//    @JsonIgnore
     private LocalDateTime createAt;
     @UpdateTimestamp
-    @JsonIgnore
+//    @JsonIgnore
     private LocalDateTime updateAt;
 
     public int getClassification() {

@@ -9,6 +9,9 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
 import quarkus.model.Genre;
 import quarkus.repository.GenreRepository;
+import quarkus.service.dto.CreateGenreDto;
+import quarkus.service.dto.UpdateGenreDto;
+import quarkus.util.GenreMapper;
 import quarkus.util.PaginatedResponse;
 
 import java.net.URI;
@@ -18,8 +21,14 @@ import java.util.NoSuchElementException;
 @Path("/genre")
 public class GenreResource {
 
+    private final GenreRepository genreRepository;
+    private final GenreMapper mapper;
+
     @Inject
-    private GenreRepository genreRepository;
+    public GenreResource(GenreRepository genreRepository, GenreMapper mapper) {
+        this.genreRepository = genreRepository;
+        this.mapper = mapper;
+    }
 
     @GET
     public List<Genre> list() {
@@ -56,9 +65,10 @@ public class GenreResource {
 
     @POST
     @Transactional
-    public Response create(Genre genre) {
-        genreRepository.persist(genre);
-        return Response.created(URI.create("/genre" + genre.getId())).entity(genre).build();
+    public Response create(CreateGenreDto genre) {
+        var entity = mapper.fromCreate(genre);
+        genreRepository.persist(entity);
+        return Response.created(URI.create("/genre" + entity.getId())).entity(entity).build();
     }
 
     @GET
@@ -72,11 +82,11 @@ public class GenreResource {
     @PUT
     @Path("{id}")
     @Transactional
-    public Genre update(@PathParam("id") Long id, Genre inbox) {
+    public Genre update(@PathParam("id") Long id, UpdateGenreDto inbox) {
         Genre found = genreRepository
                 .findByIdOptional(id)
                 .orElseThrow(() -> new NoSuchElementException("Genre " + id + ", not found"));
-        found.setName(inbox.getName());
+        mapper.update(inbox, found);
         genreRepository.persist(found);
         return found;
     }
