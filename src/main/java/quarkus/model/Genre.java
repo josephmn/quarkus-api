@@ -3,10 +3,7 @@ package quarkus.model;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.*;
 
@@ -31,6 +28,7 @@ public class Genre {
     private long id;
 //    @JsonProperty("genreName")
 //    @JsonAlias({"genreName", "name"})
+    @Column(unique = true)
     private String name;
     @CreationTimestamp
 //    @JsonIgnore
