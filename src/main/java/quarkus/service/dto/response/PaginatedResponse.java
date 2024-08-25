@@ -1,4 +1,4 @@
-package quarkus.util;
+package quarkus.service.dto.response;
 
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 

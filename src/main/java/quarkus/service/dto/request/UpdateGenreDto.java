@@ -1,4 +1,4 @@
-package quarkus.service.dto;
+package quarkus.service.dto.request;
 
 public record UpdateGenreDto(
         String name

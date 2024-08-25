@@ -1,8 +1,9 @@
 package quarkus.util;
 
 import quarkus.model.Genre;
-import quarkus.service.dto.CreateGenreDto;
-import quarkus.service.dto.UpdateGenreDto;
+import quarkus.service.dto.request.CreateGenreDto;
+import quarkus.service.dto.request.UpdateGenreDto;
+import quarkus.service.dto.response.GenreResponseDto;
 
 public interface GenreMapper {
 
@@ -10,4 +11,5 @@ public interface GenreMapper {
 
     void update(UpdateGenreDto dto, Genre genre);
 
+    GenreResponseDto present(Genre g);
 }

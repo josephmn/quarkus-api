@@ -1,5 +1,6 @@
 package quarkus.web;
 
+import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.panache.common.Page;
 import io.quarkus.panache.common.Parameters;
 import io.quarkus.panache.common.Sort;
@@ -9,10 +10,11 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
 import quarkus.model.Genre;
 import quarkus.repository.GenreRepository;
-import quarkus.service.dto.CreateGenreDto;
-import quarkus.service.dto.UpdateGenreDto;
+import quarkus.service.dto.request.CreateGenreDto;
+import quarkus.service.dto.request.UpdateGenreDto;
+import quarkus.service.dto.response.GenreResponseDto;
 import quarkus.util.GenreMapper;
-import quarkus.util.PaginatedResponse;
+import quarkus.service.dto.response.PaginatedResponse;
 
 import java.net.URI;
 import java.util.List;
@@ -63,32 +65,49 @@ public class GenreResource {
         return new PaginatedResponse<>(query);
     }
 
+    @GET
+    @Path("/pageNewResponse")
+    public PaginatedResponse<GenreResponseDto> listPageNewResponse(
+            @QueryParam("p") @DefaultValue("1") int page,
+            @QueryParam("q") String q
+    ) {
+        PanacheQuery<Genre> query = genreRepository.findPage(page);
+        PanacheQuery<GenreResponseDto> present = query.project(GenreResponseDto.class);
+        if (q != null) {
+            var nameLike = "%" + q + "%";
+            present.filter("name.like", Parameters.with("name", nameLike));
+        }
+        return new PaginatedResponse<>(present);
+    }
+
     @POST
     @Transactional
     public Response create(CreateGenreDto genre) {
         var entity = mapper.fromCreate(genre);
         genreRepository.persist(entity);
-        return Response.created(URI.create("/genre" + entity.getId())).entity(entity).build();
+        var representation = mapper.present(entity);
+        return Response.created(URI.create("/genre" + entity.getId())).entity(representation).build();
     }
 
     @GET
     @Path("{id}")
-    public Genre get(@PathParam("id") Long id) {
+    public GenreResponseDto get(@PathParam("id") Long id) {
         return genreRepository
                 .findByIdOptional(id)
+                .map(mapper::present)
                 .orElseThrow(() -> new NoSuchElementException("Genre " + id + ", not found"));
     }
 
     @PUT
     @Path("{id}")
     @Transactional
-    public Genre update(@PathParam("id") Long id, UpdateGenreDto inbox) {
+    public GenreResponseDto update(@PathParam("id") Long id, UpdateGenreDto inbox) {
         Genre found = genreRepository
                 .findByIdOptional(id)
                 .orElseThrow(() -> new NoSuchElementException("Genre " + id + ", not found"));
         mapper.update(inbox, found);
         genreRepository.persist(found);
-        return found;
+        return mapper.present(found);
     }
 
     @DELETE
