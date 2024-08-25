@@ -6,6 +6,7 @@ import io.quarkus.panache.common.Parameters;
 import io.quarkus.panache.common.Sort;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
 import quarkus.model.Genre;
@@ -82,7 +83,7 @@ public class GenreResource {
 
     @POST
     @Transactional
-    public Response create(CreateGenreDto genre) {
+    public Response create(@Valid CreateGenreDto genre) {
         var entity = mapper.fromCreate(genre);
         genreRepository.persist(entity);
         var representation = mapper.present(entity);
@@ -101,7 +102,7 @@ public class GenreResource {
     @PUT
     @Path("{id}")
     @Transactional
-    public GenreResponseDto update(@PathParam("id") Long id, UpdateGenreDto inbox) {
+    public GenreResponseDto update(@PathParam("id") Long id, @Valid UpdateGenreDto inbox) {
         Genre found = genreRepository
                 .findByIdOptional(id)
                 .orElseThrow(() -> new NoSuchElementException("Genre " + id + ", not found"));
