@@ -16,6 +16,7 @@ import quarkus.service.dto.request.UpdateGenreDto;
 import quarkus.service.dto.response.GenreResponseDto;
 import quarkus.util.GenreMapper;
 import quarkus.service.dto.response.PaginatedResponse;
+import quarkus.util.GenreValidator;
 
 import java.net.URI;
 import java.util.List;
@@ -26,11 +27,13 @@ public class GenreResource {
 
     private final GenreRepository genreRepository;
     private final GenreMapper mapper;
+    private final GenreValidator validator;
 
     @Inject
-    public GenreResource(GenreRepository genreRepository, GenreMapper mapper) {
+    public GenreResource(GenreRepository genreRepository, GenreMapper mapper, GenreValidator validator) {
         this.genreRepository = genreRepository;
         this.mapper = mapper;
+        this.validator = validator;
     }
 
     @GET
@@ -83,7 +86,12 @@ public class GenreResource {
 
     @POST
     @Transactional
-    public Response create(@Valid CreateGenreDto genre) {
+    public Response create(CreateGenreDto genre) {
+        var error = (this.validator.validateGenre(genre));
+        if (error.isPresent()) {
+            var msg = error.get();
+            return Response.status(400).entity(msg).build();
+        }
         var entity = mapper.fromCreate(genre);
         genreRepository.persist(entity);
         var representation = mapper.present(entity);
